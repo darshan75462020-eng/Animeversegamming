@@ -70,11 +70,11 @@ To run this project locally:
 
 | Field | Detail |
 | :--- | :--- |
-| **Name** | \[Dharshan] |
-| **College Name** | **\[V S B ENGINEERING COLLEGE]** |
+| **Name** | Dharshan |
+| **College Name** | **V S B ENGINEERING COLLEGE** |
 | **University** | Anna University / Affiliated |
 | **Karur (Tamil Nadu)** |
-| **Academic Year** | **\[2023-2027]** |
+| **Academic Year** | **2023-2027** |
 
 ---
 
@@ -95,7 +95,7 @@ This project is open-sourced under the **MIT License**.
 
 For any inquiries or feedback on the project:
 
-* **Email:** \[dharshanoffll@gmail.com]
-* **GitHub:** \[https://github.com/darshan75462020-eng]
-* **LinkedIn:** \[https://www.linkedin.com/in/dharshan-gangadhar75/]
+* **Email:** dharshanoffll@gmail.com
+* **GitHub:** https://github.com/darshan75462020-eng
+* **LinkedIn:** https://www.linkedin.com/in/dharshan-gangadhar75/
 ````
