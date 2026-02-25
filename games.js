@@ -1312,7 +1312,15 @@ function initReactionTestGame() {
 function createChessGame() {
     return `
         <div class="inline-game chess-game-container">
-            <div class="game-controls">
+            <div class="game-controls" style="flex-wrap: wrap; gap: 15px;">
+                <div class="color-selection">
+                    <label style="margin-right: 15px; cursor: pointer;">
+                        <input type="radio" name="chessColor" value="w" checked onchange="changeChessColor('w')"> Play as White
+                    </label>
+                    <label style="cursor: pointer;">
+                        <input type="radio" name="chessColor" value="b" onchange="changeChessColor('b')"> Play as Black
+                    </label>
+                </div>
                 <div class="game-stats chess-stats">
                     <div id="chessStatus">Your turn (White)</div>
                 </div>
@@ -1337,7 +1345,9 @@ function initChessGame() {
     let game = new Chess();
     let selectedSquare = null;
     let possibleMoves = [];
-    
+    let playerColor = 'w';
+    let isThinking = false;
+
     // Unicode pieces map
     const piecesMap = {
         'p': '♟', 'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚',
@@ -1348,8 +1358,13 @@ function initChessGame() {
         boardElement.innerHTML = '';
         const board = game.board();
         
-        for (let r = 0; r < 8; r++) {
-            for (let c = 0; c < 8; c++) {
+        for (let row = 0; row < 8; row++) {
+            for (let col = 0; col < 8; col++) {
+                // If player is white, r=0 is rank 8 (top).
+                // If player is black, r=0 is rank 1 (top).
+                const r = playerColor === 'w' ? row : 7 - row;
+                const c = playerColor === 'w' ? col : 7 - col;
+                
                 // Determine file (a-h) and rank (1-8)
                 const file = String.fromCharCode('a'.charCodeAt(0) + c);
                 const rank = 8 - r;
@@ -1384,7 +1399,7 @@ function initChessGame() {
     }
 
     function handleSquareClick(square) {
-        if (game.game_over() || game.turn() === 'b') return; // AI is Black
+        if (game.game_over() || game.turn() !== playerColor || isThinking) return;
 
         if (selectedSquare) {
             // Re-clicking selected square -> unselect
@@ -1409,6 +1424,7 @@ function initChessGame() {
                 renderBoard();
                 
                 if (!game.game_over()) {
+                    isThinking = true;
                     statusElement.textContent = "AI is thinking...";
                     setTimeout(makeAIMove, 200);
                 }
@@ -1447,6 +1463,9 @@ function initChessGame() {
             status = `${moveColor} to move`;
             if (game.in_check()) {
                 status += ' (' + moveColor + ' is in check)';
+            }
+            if(game.turn() === playerColor) {
+               status = "Your turn" + (game.in_check() ? " (Check!)" : "");
             }
         }
         statusElement.textContent = status;
@@ -1532,14 +1551,34 @@ function initChessGame() {
         if (bestMove) {
             game.move(bestMove);
             renderBoard();
+            isThinking = false;
+            updateStatus();
         }
     }
+
+    window.changeChessColor = function(color) {
+        const confirmChange = game.history().length === 0 || confirm("Switching sides will restart the game. Proceed?");
+        if(confirmChange) {
+            playerColor = color;
+            resetChessGame();
+        } else {
+            // Revert radio button explicitly if cancelled
+            document.querySelector(`input[name="chessColor"][value="${playerColor}"]`).checked = true;
+        }
+    };
 
     window.resetChessGame = function() {
         game.reset();
         selectedSquare = null;
         possibleMoves = [];
+        isThinking = false;
         renderBoard();
+        
+        if (playerColor === 'b') {
+            isThinking = true;
+            statusElement.textContent = "AI is thinking...";
+            setTimeout(makeAIMove, 200);
+        }
     };
 
     // Initialize the rendering loop
